@@ -3,42 +3,102 @@ package main
 import "fmt"
 
 type Tree struct {
+	prev *Tree
 	judul   string
 	link    string
 	nextArr []*Tree
+	depth   int
 }
 
-var isFound bool
+var queue []*Tree
 
-func BFS(depth int, currentTree Tree, judulArtikelTujuan string) {
-	// Cari judul halaman
-	getJudul(currentTree.link, func(judul string) {
-		currentTree.judul = judul
-	})
+var visited map[string]bool
 
-	// Base Case, berhenti kalo sudah ketemu
-	isFound = (currentTree.judul == judulArtikelTujuan)
-	if isFound {
-		return
+func initTree(currentTree *Tree) bool {
+	var links []string
+
+	currentTree.judul = linkTojudul(currentTree.link)
+
+	// Cek apakah halaman sudah pernah di-visit
+	_, ok := visited[currentTree.judul]
+	if (ok)  {
+		return false
+	} else if (currentTree.judul == "GAGAL DECODE") {
+		fmt.Print("GAGAL DECODE JUDUL: ")
+		fmt.Println(currentTree.link)
+		return false
 	}
+	
+	linkScraping(currentTree.link, &links)
 
-	// Ambil semua link yang terdapat pada halaman
-	arr := linkScraping(currentTree.link)
-	for _, link := range arr {
+	for _, link := range links {
 		newTree := Tree{
+			prev: currentTree,
 			link:    link,
 			nextArr: []*Tree{},
+			depth:   currentTree.depth + 1,
 		}
 		currentTree.nextArr = append(currentTree.nextArr, &newTree)
 	}
+	return true
+}
 
-	// fmt.Println(currentTree.judul, currentTree.link)
+func BFS(root Tree, judulArtikelTujuan string) {
+	queue = append(queue, &root)
+	visited = make(map[string]bool)
+	
+	var isFound bool
+	var currentTree *Tree
+	var cnt int = 0 // Jumlah artikel yang diperiksa
+	for {
+		currentTree = queue[0]
+		
+		// Ambil semua link yang terdapat pada halaman
+		isNotVisited := initTree(currentTree)
+		
+		if isNotVisited {
+			cnt++
+			// fmt.Println(currentTree.judul, currentTree.link)
+			// Berhenti ketika sudah ketemu / link habis
+			isFound = (currentTree.judul == judulArtikelTujuan)
+			if isFound || len(queue) == 0 {
+				break
+			}
+	
+			// Add semua link ke queue
+			queue = append(queue, currentTree.nextArr...)
+	
+			// Tambahkan ke visited
+			visited[currentTree.judul] = true
+		} 
 
-	// masih bukan bfs
-	depth++
-	for i := 0; i < len(currentTree.nextArr); i++ {
-		fmt.Println(currentTree.nextArr[i].link)
-		// BFS(depth, *currentTree.nextArr[i], judulArtikelTujuan)
+		// Hapus elemen pertama queue
+		queue = queue[1:]
 	}
 
+	// Output
+	output(currentTree, cnt)
+}
+
+/*
+	Print OUTPUT
+*/
+func output(currentTree *Tree, cnt int) {
+	cpyTree := currentTree
+
+	fmt.Println("\nRute:")
+	for {
+		if cpyTree == nil {
+			break
+		}
+
+		fmt.Println(cpyTree.link)
+		cpyTree = cpyTree.prev
+	}
+
+	fmt.Print("\nJumlah artikel yang dilalui: ")
+	fmt.Println(currentTree.depth + 1)
+
+	fmt.Print("Jumlah artikel yang diperiksa: ")
+	fmt.Println(cnt)
 }
