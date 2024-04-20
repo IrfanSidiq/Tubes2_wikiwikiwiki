@@ -12,7 +12,7 @@ import (
 /*
 	Ambil semua link & judul dari bagian artikel halaman
 */
-func linkScraping(link string, links *[]string) {
+func linkScraping(link string, links *[]string, judul *string) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("en.wikipedia.org", "id.wikipedia.org"),
 	)
@@ -27,6 +27,10 @@ func linkScraping(link string, links *[]string) {
 			link = "https://en.wikipedia.org" + link 
 			*links = append(*links, link)
 		}
+	})
+
+	c.OnHTML("h1[id=firstHeading]", func(h *colly.HTMLElement) {
+		*judul = h.Text
 	})
 
 	c.Visit(link)
@@ -52,17 +56,17 @@ func judulToLink(judul string) string {
 /*
 	Ubah link menjadi judul artikel
 */
-func linkTojudul(link string) string {
-	encoded := strings.TrimPrefix(link, "https://en.wikipedia.org/wiki/")
-	encoded = strings.ReplaceAll(encoded, "_", "+")
-	decoded, err := url.QueryUnescape(encoded)
-	if err == nil {
-		return decoded
-	} else {
-		// harusnya ga pernah gagal
-		return "GAGAL DECODE"
-	}
-}
+// func linkTojudul(link string) string {
+// 	encoded := strings.TrimPrefix(link, "https://en.wikipedia.org/wiki/")
+// 	encoded = strings.ReplaceAll(encoded, "_", "+")
+// 	decoded, err := url.QueryUnescape(encoded)
+// 	if err == nil {
+// 		return decoded
+// 	} else {
+// 		// harusnya ga pernah gagal
+// 		return "GAGAL DECODE"
+// 	}
+// }
 
 func main() {
 	/* Terima Input */

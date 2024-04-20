@@ -16,20 +16,14 @@ var visited map[string]bool
 
 func initTree(currentTree *Tree) bool {
 	var links []string
-
-	currentTree.judul = linkTojudul(currentTree.link)
-
+	
+	linkScraping(currentTree.link, &links, &currentTree.judul)
+	
 	// Cek apakah halaman sudah pernah di-visit
 	_, ok := visited[currentTree.judul]
 	if (ok)  {
 		return false
-	} else if (currentTree.judul == "GAGAL DECODE") {
-		fmt.Print("GAGAL DECODE JUDUL: ")
-		fmt.Println(currentTree.link)
-		return false
-	}
-	
-	linkScraping(currentTree.link, &links)
+	} 
 
 	for _, link := range links {
 		newTree := Tree{
@@ -58,7 +52,7 @@ func BFS(root Tree, judulArtikelTujuan string) {
 		
 		if isNotVisited {
 			cnt++
-			// fmt.Println(currentTree.judul, currentTree.link)
+			fmt.Println(currentTree.judul, currentTree.link)
 			// Berhenti ketika sudah ketemu / link habis
 			isFound = (currentTree.judul == judulArtikelTujuan)
 			if isFound || len(queue) == 0 {
@@ -76,6 +70,8 @@ func BFS(root Tree, judulArtikelTujuan string) {
 		queue = queue[1:]
 	}
 
+	fmt.Print("Len Queue: ")
+	fmt.Println(len(queue))
 	// Output
 	output(currentTree, cnt)
 }
@@ -87,17 +83,22 @@ func output(currentTree *Tree, cnt int) {
 	cpyTree := currentTree
 
 	fmt.Println("\nRute:")
+	var route []string
 	for {
 		if cpyTree == nil {
 			break
 		}
 
-		fmt.Println(cpyTree.link)
+		route = append(route, cpyTree.link)
 		cpyTree = cpyTree.prev
 	}
 
+	for i := len(route) - 1; i >= 0; i-- {
+		fmt.Println(route[i])
+	}
+
 	fmt.Print("\nJumlah artikel yang dilalui: ")
-	fmt.Println(currentTree.depth + 1)
+	fmt.Println(currentTree.depth)
 
 	fmt.Print("Jumlah artikel yang diperiksa: ")
 	fmt.Println(cnt)
