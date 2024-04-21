@@ -78,15 +78,16 @@ func main() {
 	/* Algoritma */
 	startTime := time.Now()
 
-	a := Tree{
-		prev: nil,
-		link:	judulToLink(judulArtikelAwal),
-		nextArr: []*Tree{},
-		depth: 0,
-	}
+	// a := Tree{
+	// 	prev: nil,
+	// 	link:	judulToLink(judulArtikelAwal),
+	// 	nextArr: []*Tree{},
+	// 	depth: 0,
+	// }
 	
-	BFS(a, judulArtikelTujuan)
+	// BFS(a, judulArtikelTujuan)
 
+	IDS(judulArtikelAwal, judulArtikelTujuan)
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 
