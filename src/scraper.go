@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
 	"github.com/gocolly/colly"
 )
 
@@ -56,24 +55,24 @@ func judulToLink(judul string) string {
 /*
 	Ubah link menjadi judul artikel
 */
-// func linkTojudul(link string) string {
-// 	encoded := strings.TrimPrefix(link, "https://en.wikipedia.org/wiki/")
-// 	encoded = strings.ReplaceAll(encoded, "_", "+")
-// 	decoded, err := url.QueryUnescape(encoded)
-// 	if err == nil {
-// 		return decoded
-// 	} else {
-// 		// harusnya ga pernah gagal
-// 		return "GAGAL DECODE"
-// 	}
-// }
+func linkTojudul(link string) string {
+	encoded := strings.TrimPrefix(link, "https://en.wikipedia.org/wiki/")
+	encoded = strings.ReplaceAll(encoded, "_", "+")
+	decoded, err := url.QueryUnescape(encoded)
+	if err == nil {
+		return decoded
+	} else {
+		// harusnya ga pernah gagal
+		return "GAGAL DECODE"
+	}
+}
 
 func main() {
 	/* Terima Input */
 
 	// var jenisAlgoritma int
-	var judulArtikelAwal string = "World War II"
-	var judulArtikelTujuan string = "World War I"
+	var judulArtikelAwal string = "Adolf Hitler"
+	var judulArtikelTujuan string = "Italy"
 
 	/* Algoritma */
 	startTime := time.Now()
@@ -87,7 +86,7 @@ func main() {
 	
 	// BFS(a, judulArtikelTujuan)
 
-	IDS(judulArtikelAwal, judulArtikelTujuan)
+	IDS_async(judulArtikelAwal, judulArtikelTujuan)
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 

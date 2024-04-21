@@ -11,23 +11,15 @@ func IDS(judulArtikelAwal string, judulArtikelTujuan string) {
 	
 	/* Deklarasi variabel */
 	linkAsal := judulToLink(judulArtikelAwal)
-	nextLinks := []string{}
 	path := []string{}
-	var currentJudul string
 	maxDepth := 0
 	found := false
 
-	linkScraping(linkAsal, &nextLinks, &currentJudul)
-
 	for !found {
 		maxDepth++
-		depth := 1
-		for !found && depth <= maxDepth {
-			fmt.Println("\nDepth:", depth)
-			found = DFS(linkAsal, judulArtikelTujuan, depth, &path)
-			fmt.Println()
-			depth++
-		}
+		fmt.Println("\nDepth:", maxDepth)
+		fmt.Println()
+		found = DFS(linkAsal, judulArtikelTujuan, maxDepth, &path)
 		if (!found) {
 			fmt.Println("\nSearch with maxDepth", maxDepth, "didn't find a result. Trying again with maxDepth", maxDepth+1, "...")
 		} 
@@ -73,49 +65,3 @@ func DFS(currentLink string, judulArtikelTujuan string, depth int, path *[]strin
 	*path = (*path)[:len(*path)-1]
 	return false
 }
-
-
-/* ----- Helper type untuk map visited ---- */
-
-// type stringBoolMap struct {
-// 	Map map[string]bool
-// 	sync.RWMutex
-// }
-
-// func newStringBoolMap() stringBoolMap {
-// 	return stringBoolMap{map[string]bool{}, sync.RWMutex{}}
-// }
-
-// func (m *stringBoolMap) get(key string) bool {
-// 	m.RLock()
-// 	defer m.RUnlock()
-// 	return m.Map[key]
-// }
-
-// func (m *stringBoolMap) set(key string) {
-// 	m.Lock()
-// 	defer m.Unlock()
-// 	m.Map[key] = true
-// }
-
-
-
-	// for depth > 0 {
-	// 	currentLink := stack[len(stack)-1]
-	// 	stack = stack[:len(stack)-1]
-
-	// 	var currentJudul string
-	// 	nextLinks := []string{}
-	// 	linkScraping(currentLink, &nextLinks, &currentJudul)
-
-	// 	if (currentJudul == judulArtikelTujuan) {
-	// 		resultChannel <- true
-	// 		return
-	// 	}
-
-	// 	if (!visited.get(currentJudul)) {
-	// 		visited.set(currentJudul)
-	// 		stack = append(stack, nextLinks...)
-	// 	}
-		
-	// }
