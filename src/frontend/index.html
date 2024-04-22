@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Data</title>
+</head>
+<body>
+    <ul id="data-list"></ul>
+
+    <script>
+        fetch('http://localhost:8080/data')
+            .then(response => response.json())
+            .then(data => {
+                const dataList = document.getElementById('data-list');
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    dataList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+</body>
+</html>
