@@ -72,7 +72,7 @@ func main() {
 
 	// var jenisAlgoritma int
 	var judulArtikelAwal string = "Adolf Hitler"
-	var judulArtikelTujuan string = "Italy"
+	var judulArtikelTujuan string = "Stardew Valley"
 
 	/* Algoritma */
 	startTime := time.Now()

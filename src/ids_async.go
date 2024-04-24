@@ -18,6 +18,7 @@ func IDS_async(fromTitle string, toTitle string) {
 
 	var wg sync.WaitGroup
 	var visitedLinks stringBoolMap
+	var cache IDSTree = newIDSTree()
 
 	go func() {
 		maxDepth := 0
@@ -25,9 +26,9 @@ func IDS_async(fromTitle string, toTitle string) {
 			maxDepth++
 			wg.Add(1)
 			visitedLinks = newStringBoolMap()
-			fmt.Println("\nDepth:", maxDepth)
+			fmt.Println("\nDepth:", maxDepth - 1)
 			fmt.Println()
-			DLS(fromLink, toTitle, 1, maxDepth, []string{}, resultPath, &found, &wg, &visitedLinks)
+			DLS(fromLink, toTitle, 0, maxDepth - 1, []string{}, resultPath, &found, &wg, &visitedLinks, &cache)
 			if (!found) {
 				fmt.Println("\nSearch with maxDepth", maxDepth, "didn't find a result. Trying again with maxDepth", maxDepth+1, "...")
 			}
@@ -44,17 +45,21 @@ func IDS_async(fromTitle string, toTitle string) {
 	fmt.Println("Route length            :", len(result))
 }
 
-func DLS(fromLink string, toTitle string, depth int, maxDepth int, path []string, resultChan chan []string, found *bool, wg *sync.WaitGroup, visitedLinks *stringBoolMap) {
+func DLS(fromLink string, toTitle string, depth int, maxDepth int, path []string, resultChan chan []string, found *bool, wg *sync.WaitGroup, visitedLinks *stringBoolMap, cache *IDSTree) {
 	defer wg.Done()
 
-	if (visitedLinks.get(linkTojudul(fromLink))) {
+	currentJudul := linkTojudul(fromLink)
+	if (visitedLinks.get(currentJudul)) {
 		return
 	}
-	visitedLinks.set(linkTojudul(fromLink))
+	visitedLinks.set(currentJudul)
+
+	var nextLinks []string = cache.get(currentJudul)
+	if (len(nextLinks) == 0) {
+		linkScraping(fromLink, &nextLinks, &currentJudul)
+		cache.set(currentJudul, nextLinks)
+	}
 	
-	var currentJudul string
-	var nextLinks []string
-	linkScraping(fromLink, &nextLinks, &currentJudul)
 	path = append(path, currentJudul)
 
 	fmt.Print("SEARCHING: \"" + path[0] + "\"")
@@ -93,7 +98,7 @@ func DLS(fromLink string, toTitle string, depth int, maxDepth int, path []string
 					currentWg.Done()
 					return
 				}
-				DLS(nextLink, toTitle, depth + 1, maxDepth, path, resultChan, found, &currentWg, visitedLinks)
+				DLS(nextLink, toTitle, depth + 1, maxDepth, path, resultChan, found, &currentWg, visitedLinks, cache)
 			}
 		} ()
 	}
@@ -105,6 +110,9 @@ func DLS(fromLink string, toTitle string, depth int, maxDepth int, path []string
 	close(linkChannel)
 	currentWg.Wait()
 }
+
+
+/* ----- Helper Data Types ----- */
 
 type stringBoolMap struct {
 	Map map[string]bool
@@ -125,4 +133,25 @@ func (m *stringBoolMap) set(key string) {
 	m.Lock()
 	defer m.Unlock()
 	m.Map[key] = true
+}
+
+type IDSTree struct {
+	Map map[string][]string
+	sync.RWMutex
+}
+
+func newIDSTree() IDSTree {
+	return IDSTree{map[string][]string{}, sync.RWMutex{}}
+}
+
+func (m *IDSTree) get(key string) []string {
+	m.RLock()
+	defer m.RUnlock()
+	return m.Map[key]
+}
+
+func (m *IDSTree) set(key string, value []string) {
+	m.Lock()
+	defer m.Unlock()
+	m.Map[key] = value
 }
