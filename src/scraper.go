@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
 	"github.com/gocolly/colly"
 )
 
@@ -84,9 +85,9 @@ func main() {
 	// 	depth: 0,
 	// }
 	
-	// BFS(a, judulArtikelTujuan)
+	BFS_Async(judulArtikelAwal, judulArtikelTujuan)
 
-	IDS_async(judulArtikelAwal, judulArtikelTujuan)
+	// IDS_async(judulArtikelAwal, judulArtikelTujuan)
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 

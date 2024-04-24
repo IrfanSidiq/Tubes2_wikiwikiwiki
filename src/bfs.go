@@ -1,14 +1,8 @@
 package main
 
-import "fmt"
-
-type Tree struct {
-	prev *Tree
-	judul   string
-	link    string
-	nextArr []*Tree
-	depth   int
-}
+import (
+	"fmt"
+)
 
 var queue []*Tree
 
@@ -52,15 +46,19 @@ func BFS(root Tree, judulArtikelTujuan string) {
 		
 		if isNotVisited {
 			cnt++
-			fmt.Println(currentTree.judul, currentTree.link)
 			// Berhenti ketika sudah ketemu / link habis
 			isFound = (currentTree.judul == judulArtikelTujuan)
 			if isFound || len(queue) == 0 {
 				break
 			}
 	
-			// Add semua link ke queue
-			queue = append(queue, currentTree.nextArr...)
+			// Add semua link kecuali yang sudah ada dalam visited ke queue
+			for _, val := range currentTree.nextArr {
+				_, ok := visited[val.judul]
+				if (!ok)  {
+					queue = append(queue, val)
+				} 
+			}
 	
 			// Tambahkan ke visited
 			visited[currentTree.judul] = true
@@ -69,10 +67,10 @@ func BFS(root Tree, judulArtikelTujuan string) {
 		// Hapus elemen pertama queue
 		queue = queue[1:]
 	}
-
-	fmt.Print("Len Queue: ")
-	fmt.Println(len(queue))
+	
 	// Output
+	fmt.Print("\nLen Queue: ")
+	fmt.Println(len(queue))
 	output(currentTree, cnt)
 }
 
