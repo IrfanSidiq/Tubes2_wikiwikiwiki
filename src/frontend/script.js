@@ -8,6 +8,18 @@ document.querySelector("form").addEventListener("submit", function(event) {
         result.removeChild(result.lastChild);
     }
 
+    // Check if start page and end page are the same
+    const startPageValue = document.getElementById("start-page").value;
+    const endPageValue = document.getElementById("end-page").value;
+    if (startPageValue === endPageValue) {
+        const div = document.createElement("div");
+        const p = document.createElement("p");
+        p.textContent = "Start page and end page must be different!";
+        div.appendChild(p);
+        result.appendChild(div);
+        return;
+    }
+
     // Get form data
     const formData = new FormData(this);
 
@@ -51,25 +63,29 @@ document.querySelector(".swap").addEventListener("click", () => {
 
 const displayResults = (data) => {
     const result = document.querySelector(".result");
+
+    const div = document.createElement("div");
     
     const jumlahArtikelDiperiksa = document.createElement("p");
     jumlahArtikelDiperiksa.textContent = `Jumlah Artikel Diperiksa: ${data.jumlahArtikelDiperiksa}`
-    result.appendChild(jumlahArtikelDiperiksa);
+    div.appendChild(jumlahArtikelDiperiksa);
     
     const jumlahArtikelDilalui = document.createElement("p");
     jumlahArtikelDilalui.textContent = `Jumlah Artikel Dilalui: ${data.jumlahArtikelDilalui}`;
-    result.appendChild(jumlahArtikelDilalui);
+    div.appendChild(jumlahArtikelDilalui);
 
     const searchDuration = document.createElement("p");
     searchDuration.textContent = `Search Duration: ${data.searchDuration} ms`;
-    result.appendChild(searchDuration);
+    div.appendChild(searchDuration);
+
+    result.appendChild(div);
 
     data.routes.forEach((rute, index) => {
         const div = document.createElement("div");
         
-        const p = document.createElement("p");
-        p.textContent = `Route ${index + 1}:`;
-        div.appendChild(p);
+        const h3 = document.createElement("h3");
+        h3.textContent = `Route ${index + 1}:`;
+        div.appendChild(h3);
         
         const ol = document.createElement("ol");
         rute.forEach(link => {

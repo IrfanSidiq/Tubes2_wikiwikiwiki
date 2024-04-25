@@ -89,3 +89,8 @@ func main() {
 	fmt.Println("Server running on localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
+
+// How to run:
+// cd src/backend
+// go run main.go
+// Open browser and go to http://localhost:8080
