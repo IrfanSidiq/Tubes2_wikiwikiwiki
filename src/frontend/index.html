@@ -3,28 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fetch Data</title>
+    <title>WikiWikiWiki</title>
 </head>
 <body>
     <header>
         <h1>WikiWikiWiki</h1>
-        <h2>Find the shortest path from a wikipedia page to another wikipedia page</h2>
+        <h2>Find The Shortest Path From A Wikipedia Page To Another Wikipedia Page</h2>
     </header>
     <main>
-        <form id="wiki-form" action="http://localhost:8080/data" method="post">
-            <div class="input-start-page">
+        <form>
+            <div>
                 <label for="start-page">From</label>
-                <input type="text" name="start-page" id="start-page">
+                <input type="text" name="start-page" id="start-page" placeholder="Start Page">
             </div>
             
-            <button class="swap" title="swap the start and end pages"><img src="img/swap.png" alt="swap"></button>
+            <div>
+                <button type="button" class="swap" title="Swap The Start And End Pages">Swap</button>
+            </div>
             
-            <div class="input-end-page">
+            <div>
                 <label for="end-page">To</label>
-                <input type="text" name="end-page" id="end-page">
+                <input type="text" name="end-page" id="end-page" placeholder="End Page">
             </div>
             
-            <div class="input-algorithm">
+            <div>
                 <label for="algorithm">Choose Algorithm</label>
                 <select name="algorithm" id="algorithm">
                     <option value="bfs">BFS (Breadth First Search)</option>
@@ -32,7 +34,9 @@
                 </select>
             </div>
             
-            <button type="submit">GO!</button>
+            <div>
+                <button type="submit" title="Submit The Inputs">Go!</button>
+            </div>
         </form>
         <div class="result"></div>
     </main>
