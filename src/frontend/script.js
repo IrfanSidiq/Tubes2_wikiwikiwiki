@@ -64,28 +64,33 @@ document.querySelector(".swap").addEventListener("click", () => {
 const displayResults = (data) => {
     const result = document.querySelector(".result");
 
-    const div = document.createElement("div");
+    const divSummary = document.createElement("div");
+    divSummary.classList.add("summary");
     
     const jumlahArtikelDiperiksa = document.createElement("p");
     jumlahArtikelDiperiksa.textContent = `Jumlah Artikel Diperiksa: ${data.jumlahArtikelDiperiksa}`
-    div.appendChild(jumlahArtikelDiperiksa);
+    divSummary.appendChild(jumlahArtikelDiperiksa);
     
     const jumlahArtikelDilalui = document.createElement("p");
     jumlahArtikelDilalui.textContent = `Jumlah Artikel Dilalui: ${data.jumlahArtikelDilalui}`;
-    div.appendChild(jumlahArtikelDilalui);
+    divSummary.appendChild(jumlahArtikelDilalui);
 
     const searchDuration = document.createElement("p");
     searchDuration.textContent = `Search Duration: ${data.searchDuration} ms`;
-    div.appendChild(searchDuration);
+    divSummary.appendChild(searchDuration);
 
-    result.appendChild(div);
+    result.appendChild(divSummary);
+
+    const divRoutes = document.createElement("div");
+    divRoutes.classList.add("routes");
 
     data.routes.forEach((rute, index) => {
-        const div = document.createElement("div");
+        const divRoute = document.createElement("div");
+        divRoute.classList.add("route");
         
         const h3 = document.createElement("h3");
         h3.textContent = `Route ${index + 1}:`;
-        div.appendChild(h3);
+        divRoute.appendChild(h3);
         
         const ol = document.createElement("ol");
         rute.forEach(link => {
@@ -96,7 +101,9 @@ const displayResults = (data) => {
             li.appendChild(a);
             ol.appendChild(li);
         });
-        div.appendChild(ol);
-        result.appendChild(div)
+        divRoute.appendChild(ol);
+        divRoutes.appendChild(divRoute)
     })
+
+    result.appendChild(divRoutes);
 }

@@ -120,8 +120,19 @@ button:hover {
 
 .result div {
 	margin: 5vh;
+	text-align: center; /* temporary */
 }
 
-.result div {
+/*
+.result div.summary {
 	text-align: center;
 }
+
+.result div.routes {
+	overflow: auto;
+}
+
+.result div.route {
+	float: left;
+}
+*/
