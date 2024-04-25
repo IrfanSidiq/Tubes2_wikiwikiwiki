@@ -6,20 +6,37 @@
     <title>Fetch Data</title>
 </head>
 <body>
-    <ul id="data-list"></ul>
+    <header>
+        <h1>WikiWikiWiki</h1>
+        <h2>Find the shortest path from a wikipedia page to another wikipedia page</h2>
+    </header>
+    <main>
+        <form id="wiki-form" action="http://localhost:8080/data" method="post">
+            <div class="input-start-page">
+                <label for="start-page">From</label>
+                <input type="text" name="start-page" id="start-page">
+            </div>
+            
+            <button class="swap" title="swap the start and end pages"><img src="img/swap.png" alt="swap"></button>
+            
+            <div class="input-end-page">
+                <label for="end-page">To</label>
+                <input type="text" name="end-page" id="end-page">
+            </div>
+            
+            <div class="input-algorithm">
+                <label for="algorithm">Choose Algorithm</label>
+                <select name="algorithm" id="algorithm">
+                    <option value="bfs">BFS (Breadth First Search)</option>
+                    <option value="ids">IDS (Iterative Deepening Search)</option>
+                </select>
+            </div>
+            
+            <button type="submit">GO!</button>
+        </form>
+        <div class="result"></div>
+    </main>
 
-    <script>
-        fetch('http://localhost:8080/data')
-            .then(response => response.json())
-            .then(data => {
-                const dataList = document.getElementById('data-list');
-                data.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    dataList.appendChild(li);
-                });
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
