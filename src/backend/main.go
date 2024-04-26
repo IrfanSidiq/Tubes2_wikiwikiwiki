@@ -47,10 +47,10 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 
 	if algorithm == "bfs" {
 		fmt.Println(startPage, endPage, "BFS") // testing
-		// BFS_Async(startPage, endPage)
+		// jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes := BFS_Async(startPage, endPage)
 	} else {
 		fmt.Println(startPage, endPage, "IDS") // testing
-		// IDS_Async(startPage, endPage)
+		// jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes := IDS_Async(startPage, endPage)
 	}
 
 	endTime := time.Now()
