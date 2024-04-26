@@ -20,6 +20,13 @@ document.querySelector("form").addEventListener("submit", function(event) {
         return;
     }
 
+    // Display searching message
+    const div = document.createElement("div");
+    const p = document.createElement("p");
+    p.textContent = "Searching...";
+    div.appendChild(p);
+    result.appendChild(div);
+
     // Get form data
     const formData = new FormData(this);
 
@@ -63,6 +70,11 @@ document.querySelector(".swap").addEventListener("click", () => {
 
 const displayResults = (data) => {
     const result = document.querySelector(".result");
+
+    // remove all result messages
+    while (result.hasChildNodes()) {
+        result.removeChild(result.lastChild);
+    }
 
     const divSummary = document.createElement("div");
     divSummary.classList.add("summary");
