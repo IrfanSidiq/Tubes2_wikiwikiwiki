@@ -19,11 +19,13 @@ func linkScraping(link string, links *[]string, judul *string) {
 
 	c.OnHTML("div[id=mw-content-text] p a[href]", func(h *colly.HTMLElement) {
 		var link string = h.Attr("href")
-		// Ambil link wikipedia yang bukan file / template / wikipedia: 
+		// Ambil link wikipedia kecuali yang bukan artikel 
 		if (strings.HasPrefix(link, "/wiki/") && 
 			!strings.HasPrefix(link, "/wiki/File:") && 
 			!strings.HasPrefix(link, "/wiki/Template:") &&
-			!strings.HasPrefix(link, "/wiki/Wikipedia:")) {
+			!strings.HasPrefix(link, "/wiki/Wikipedia:")) &&
+			!strings.HasPrefix(link, "/wiki/Help:") &&
+			!strings.HasPrefix(link, "/wiki/Portal:") {
 			link = "https://en.wikipedia.org" + link 
 			*links = append(*links, link)
 		}
@@ -72,24 +74,16 @@ func main() {
 	/* Terima Input */
 
 	// var jenisAlgoritma int
-	var judulArtikelAwal string = "Adolf Hitler"
+	var judulArtikelAwal string = "Paging"
 	var judulArtikelTujuan string = "Stardew Valley"
 
 	/* Algoritma */
 	startTime := time.Now()
 
-	// a := Tree{
-	// 	prev: nil,
-	// 	link:	judulToLink(judulArtikelAwal),
-	// 	nextArr: []*Tree{},
-	// 	depth: 0,
-	// }
-	
 	BFS_Async(judulArtikelAwal, judulArtikelTujuan)
-
 	// IDS_async(judulArtikelAwal, judulArtikelTujuan)
-	endTime := time.Now()
-	duration := endTime.Sub(startTime)
+
+	duration := time.Since(startTime)
 
 	fmt.Print("Runtime: ")
 	fmt.Println(duration)
