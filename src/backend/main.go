@@ -32,6 +32,7 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 	startPage := requestData["start-page"]
 	endPage := requestData["end-page"]
 	algorithm := requestData["algorithm"]
+	numberOfPath := requestData["number-of-path"]
 
 	// Find path
 	var jumlahArtikelDiperiksa int = 100 // testing with placeholder value
@@ -46,11 +47,23 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 
 	if algorithm == "bfs" {
-		fmt.Println(startPage, endPage, "BFS") // testing
-		// jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes := BFS_Async(startPage, endPage)
+		if numberOfPath == "single" {
+			fmt.Println(startPage, endPage, "BFS", "Single") // testing
+			// single bfs
+			// jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes := BFS_Async(startPage, endPage)
+		} else {
+			fmt.Println(startPage, endPage, "BFS", "Multiple") // testing
+			// multiple bfs
+		}
 	} else {
-		fmt.Println(startPage, endPage, "IDS") // testing
-		// jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes := IDS_Async(startPage, endPage)
+		if numberOfPath == "single" {
+			fmt.Println(startPage, endPage, "IDS", "Single") // testing
+			// single ids
+			// jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes := IDS_Async(startPage, endPage)
+		} else {
+			fmt.Println(startPage, endPage, "IDS", "Multiple") // testing
+			// multiple ids
+		}
 	}
 
 	endTime := time.Now()
