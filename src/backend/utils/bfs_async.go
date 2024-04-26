@@ -1,4 +1,4 @@
-package main
+package scraper
 
 import (
 	"fmt"
@@ -45,14 +45,14 @@ func initTreeAsync(currentTree *Tree, c chan Tree) bool {
 	return true
 }
 
-func BFS_Async(from string, to string) (int, int, [][]string) {
+func BFS(from string, to string) (int, int, [][]string) {
 	// Return jika judul asal dan tujuan sama
 	if (from == to) {
 		fmt.Println("Judul awal dan judul tujuan harus berbeda!")
 		return 0, 0, [][]string{}
 	}
 
-	// Initialize
+	// Inisialisasi
 	var wg sync.WaitGroup
 	
 	setFound(false)
@@ -139,36 +139,9 @@ func BFS_Async(from string, to string) (int, int, [][]string) {
 		}
 	} ()
 	
+	// Output
 	resT := <- resultTree
-	return cntAsync, resT.depth, [][]string{resT.prev}
-	// output(&resT, cntAsync)
+	path := append(resT.prev, resT.judul)
 
-	// fmt.Print("\nQueue len: ")
-	// fmt.Println(len(queueA))
-
-	// close(queueA)
-	// close(resultTree)
-
+	return cntAsync, resT.depth, [][]string{path}
 }
-
-/*
-	Print OUTPUT
-*/
-// func output(currentTree *Tree, cnt int) {
-// 	cpyTree := currentTree
-
-// 	fmt.Print("\nRute: ")
-// 	for idx, val := range cpyTree.prev {
-// 		fmt.Print(val)
-// 		if (idx != cpyTree.depth) {
-// 			fmt.Print(" -> ")
-// 		}
-// 	}
-// 	fmt.Println(cpyTree.judul) 
-
-// 	fmt.Print("\nJumlah artikel yang dilalui: ")
-// 	fmt.Println(currentTree.depth)
-
-// 	fmt.Print("Jumlah artikel yang diperiksa: ")
-// 	fmt.Println(cnt)
-// }

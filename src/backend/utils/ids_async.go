@@ -1,8 +1,9 @@
-package main
+package scraper
 
 import (
 	"fmt"
 	"sync"
+
 	"golang.org/x/exp/slices"
 )
 
