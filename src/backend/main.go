@@ -76,11 +76,13 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Search duration:", searchDuration, "ms")            // testing
 	
 	// Convert routes to include titles
-	routesWithTitle := make([]map[string]string, len(routes))
+	routesWithTitle := make([][][]string, len(routes))
 	for i, route := range routes {
-		routesWithTitle[i] = make(map[string]string, len(route))
-		for _, link := range route {
-			routesWithTitle[i][link] = scraper.LinkTojudul(link)
+		routesWithTitle[i] = make([][]string, len(route))
+		for j, link := range route {
+			routesWithTitle[i][j] = make([]string, 2)
+			routesWithTitle[i][j][0] = link
+			routesWithTitle[i][j][1] = scraper.LinkTojudul(link)
 		}
 	}
 	

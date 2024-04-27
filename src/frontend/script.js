@@ -99,7 +99,7 @@ const displayResults = (data) => {
     divRoutes.classList.add("routes");
 
 
-    data.routes.forEach((routes, index) => {
+    data.routes.forEach((route, index) => {
         const divRoute = document.createElement("div");
         divRoute.classList.add("route");
         
@@ -108,15 +108,16 @@ const displayResults = (data) => {
         divRoute.appendChild(h3);
         
         const ol = document.createElement("ol");
-        for (const [link, title] of Object.entries(routes)) {
+
+        route.forEach(linkAndTitle => {
             const li = document.createElement("li");
             const a = document.createElement("a");
             a.setAttribute("target", "_blank");
-            a.href = link;
-            a.textContent = title;
+            a.href = linkAndTitle[0];
+            a.textContent = linkAndTitle[1];
             li.appendChild(a);
             ol.appendChild(li);
-        };
+        });
         
         divRoute.appendChild(ol);
         divRoutes.appendChild(divRoute)
