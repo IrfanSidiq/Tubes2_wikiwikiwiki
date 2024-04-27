@@ -22,7 +22,7 @@ func initTree(currentTree *Tree, c chan Tree, singleSolution bool) bool {
 	// Masukkan semua link yang di-scrape ke dalam nextArr
 	for _, link := range links {
 		newTree := Tree{
-			prev: append(currentTree.prev, currentTree.judul),
+			prev: append(currentTree.prev, currentTree.link),
 			link:    link,
 			nextArr: []*Tree{},
 			depth:   currentTree.depth + 1,
@@ -148,7 +148,7 @@ func BFS(from string, to string, singleSolution bool) (int, int, [][]string) {
 					fmt.Print(val)
 					fmt.Print(" -> ")
 				}
-				fmt.Println(currentTree.judul, len(queueA), len(visitedAsync.Map)) 
+				fmt.Println(currentTree.link, len(queueA), len(visitedAsync.Map)) 
 				
 				// Set found ke true kalo judul sama dg to
 				if (currentTree.judul == to) {
@@ -215,7 +215,7 @@ func BFS(from string, to string, singleSolution bool) (int, int, [][]string) {
 	// Output
 	if singleSolution {
 		resT := <- resultTree
-		path := append(resT.prev, resT.judul)
+		path := append(resT.prev, resT.link)
 		return cntAsync, resT.depth, [][]string{path}
 	} else {
 		allPath := [][]string{}
@@ -223,7 +223,7 @@ func BFS(from string, to string, singleSolution bool) (int, int, [][]string) {
 
 		for i := 0; i < lenC; i++ {
 			val := <-resultTree
-			path := append(val.prev, val.judul)
+			path := append(val.prev, val.link)
 			if !isInSlice(allPath, path) {
 				allPath = append(allPath, path)
 			}
