@@ -1,9 +1,10 @@
 package scraper
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
-	"fmt"
+
 	"github.com/gocolly/colly"
 )
 

@@ -36,9 +36,42 @@ var (
 
 	foundAsync 		bool
 	foundMutex 		sync.Mutex
+
+	doneBFS 		bool
+	doneMutex 		sync.Mutex
+	
+	panjangRute int
+	pjMutex sync.Mutex
 )
 
 // Method
+func setPJ(val int) {
+	pjMutex.Lock()
+	defer pjMutex.Unlock()
+	if panjangRute == -99 {
+		panjangRute = val
+	}
+}
+
+func getPJ() int {
+	pjMutex.Lock()
+	defer pjMutex.Unlock()
+	return panjangRute
+}
+
+func setDone(val bool) {
+	doneMutex.Lock()
+	defer doneMutex.Unlock()
+	doneBFS = val
+}
+
+func getDone() bool {
+	doneMutex.Lock()
+	defer doneMutex.Unlock()
+	return doneBFS
+}
+
+
 func setFound(val bool) {
 	foundMutex.Lock()
 	defer foundMutex.Unlock()

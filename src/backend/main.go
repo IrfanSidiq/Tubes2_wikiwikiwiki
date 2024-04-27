@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"time"
-	"wikipediaScraper/backend/utils"
+	scraper "wikipediaScraper/backend/utils"
 )
 
 func processHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,14 +36,12 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 	numberOfPath := requestData["number-of-path"]
 
 	// Find path
-	var jumlahArtikelDiperiksa int = 100 // testing with placeholder value
-	var jumlahArtikelDilalui int = 100   // testing with placeholder value
-	var routes [][]string = [][]string{  // testing with placeholder value
-		{"apple.com", "banana.com", "egg.com"},
-		{"apple.com", "banana.com", "cherry.com", "egg.com"},
-		{"apple.com", "egg.com"},
-		{"apple.com", "durian.com", "egg.com"},
-	}
+
+	var (
+		jumlahArtikelDiperiksa int
+		jumlahArtikelDilalui int
+		routes [][]string
+	)
 
 	startTime := time.Now()
 
@@ -51,10 +49,11 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 		if numberOfPath == "single" {
 			fmt.Println(startPage, endPage, "BFS", "Single") // testing
 			// single bfs
-			// jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes := BFS_Async(startPage, endPage)
+			jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes = scraper.BFS(startPage, endPage, true)
 		} else {
 			fmt.Println(startPage, endPage, "BFS", "Multiple") // testing
 			// multiple bfs
+			jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes = scraper.BFS(startPage, endPage, false)
 		}
 	} else {
 		if numberOfPath == "single" {

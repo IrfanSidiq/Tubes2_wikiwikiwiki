@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func initTree(currentTree *Tree, c chan Tree) bool {
+func initTree(currentTree *Tree, c chan Tree, singleSolution bool) bool {
 	if getFound() {
 		return false
 	} 
@@ -29,17 +29,35 @@ func initTree(currentTree *Tree, c chan Tree) bool {
 		}
 		
 		// Jika link sama dengan link yang di cari, return
-		if link == linkTujuan && !getFound() {
-			setFound(true)
-
+		if link == linkTujuan {
 			newTree.judul = linkTojudul(linkTujuan)
-			select {
-			case c <- newTree:
-			default:
+			if singleSolution {
+				if !getFound() {
+					setFound(true)
+		
+					select {
+					case c <- newTree:
+					default:
+					}
+				}
+			} else {
+				if len(c) < 1 {
+					if getPJ() == -99  {
+						setPJ(newTree.depth)
+					}
+					select {
+					case c <- newTree:
+					default:
+					}
+				} else {
+					if getPJ() == newTree.depth {
+						select {
+						case c <- newTree:
+						default:
+						}
+					}
+				}
 			}
-			// if (len(c) < 1) {
-			// 	c <- newTree
-			// }
 
 			return false
 		}
@@ -49,7 +67,7 @@ func initTree(currentTree *Tree, c chan Tree) bool {
 	return true
 }
 
-func BFS(from string, to string) (int, int, [][]string) {
+func BFS(from string, to string, singleSolution bool) (int, int, [][]string) {
 	// Return jika judul asal dan tujuan sama
 	if (from == to) {
 		fmt.Println("Judul awal dan judul tujuan harus berbeda!")
@@ -60,6 +78,8 @@ func BFS(from string, to string) (int, int, [][]string) {
 	var wg sync.WaitGroup
 	
 	setFound(false)
+	setDone(false)
+	panjangRute = -99
 	linkAsal = judulToLink(from)
 	linkTujuan = judulToLink(to)
 	
@@ -73,9 +93,9 @@ func BFS(from string, to string) (int, int, [][]string) {
 	}
 	
 	queueA := make(chan *Tree, 10000000)
-	resultTree := make(chan Tree, 1)
+	resultTree := make(chan Tree, 10000)
 	
-	initTree(&a, resultTree)
+	initTree(&a, resultTree, singleSolution)
 	for _, val := range a.nextArr {
 		queueA <- val
 	}
@@ -84,71 +104,157 @@ func BFS(from string, to string) (int, int, [][]string) {
 	
 	// Start
 	setCnt(0)
-	go func () {
-		for !getFound() {
-			wg.Add(100)
-			for i := 0; i < 100; i++ {
-				go func() {
-					defer wg.Done()
-					
-					currentTree, isOpen := <- queueA
-					if (!isOpen) {
-						return
-					}
-	
-					// Return jika sudah di visit / sudah ketemu
-					isNotVisited := initTree(currentTree, resultTree)
-					if !isNotVisited {
-						return
-					} else if getFound() {
-						return
-					} else {
-						visitedAsync.set(currentTree.link)
-						incCnt()
-					}
-					
-					// Print
-					fmt.Print("Searching: ")
-					for _, val := range currentTree.prev {
-						fmt.Print(val)
-						fmt.Print(" -> ")
-					}
-					fmt.Println(currentTree.judul, len(queueA), len(visitedAsync.Map)) 
-					
-					// Set found ke true kalo judul sama dg to
-					if (currentTree.judul == to) && !getFound() {
-						setFound(true)
-						select {
-						case resultTree <- *currentTree:
-						default:
+	for {
+		wg.Add(100)
+		for i := 0; i < 100; i++ {
+			go func() {
+				defer wg.Done()
+				
+				currentTree, isOpen := <- queueA
+				if (!isOpen) {
+					return
+				}
+				
+				// Return jika sudah di visit / sudah ketemu
+				isNotVisited := initTree(currentTree, resultTree, singleSolution)
+				if !isNotVisited {
+					return
+				} else {
+					visitedAsync.set(currentTree.link)
+					incCnt()
+
+					if singleSolution {
+						if getFound() {
+							return
 						}
-						// if (len(resultTree) < 1) {
-						// 	resultTree <- *currentTree
-						// }
-						return
-					}
-					
-					// Masukkan link dalam halaman kedalam queue, asumsi queue tidak akan penuh
-					for _, val := range currentTree.nextArr {
-						if !visitedAsync.keyExists(val.link) {
-							select {
-							case queueA <- val:
-							default: 
-								fmt.Println("Channel penuh")
+					} else {
+						if getDone() {
+							return
+						} 
+
+						if getPJ() != -99 {
+							if currentTree.depth > getPJ() {
+								fmt.Println("done")
+								setDone(true)
+								return
 							}
 						}
 					}
-					
-				} ()
-			}
-	
-			wg.Wait()
+				}
+				
+				// Print
+				fmt.Print("Searching: ")
+				for _, val := range currentTree.prev {
+					fmt.Print(val)
+					fmt.Print(" -> ")
+				}
+				fmt.Println(currentTree.judul, len(queueA), len(visitedAsync.Map)) 
+				
+				// Set found ke true kalo judul sama dg to
+				if (currentTree.judul == to) {
+					if singleSolution {
+						if !getFound() {
+							setFound(true)
+							select {
+							case resultTree <- *currentTree:
+							default:
+							}
+						}
+					} else {
+						if len(resultTree) == 0 {
+							if getPJ() == -99 {
+								fmt.Println("setPJ", currentTree.link, currentTree.depth)
+								setPJ(currentTree.depth)
+							}
+
+							select {
+							case resultTree <- *currentTree: 
+							default:
+							}
+						} else {
+							if currentTree.depth == getPJ() {
+								select {
+								case resultTree <- *currentTree:
+								default:
+								}									
+							} else {
+								setDone(true)
+							}
+						}
+					}
+					return
+				}
+				
+				// Masukkan link dalam halaman kedalam queue, asumsi queue tidak akan penuh
+				for _, val := range currentTree.nextArr {
+					if !visitedAsync.keyExists(val.link) {
+						select {
+						case queueA <- val:
+						default: 
+							fmt.Println("Channel penuh")
+						}
+					}
+				}
+				
+			} ()
 		}
-	} ()
+		
+		wg.Wait()
+
+		if singleSolution {
+			if getFound() {
+				break
+			}
+		} else {
+			if getDone() {
+				break
+			}
+		}
+	}
 	
 	// Output
-	resT := <- resultTree
-	path := append(resT.prev, resT.judul)
+	if singleSolution {
+		resT := <- resultTree
+		path := append(resT.prev, resT.judul)
+		return cntAsync, resT.depth, [][]string{path}
+	} else {
+		allPath := [][]string{}
+		lenC := len(resultTree)
 
-	return cntAsync, resT.depth, [][]string{path}
+		for i := 0; i < lenC; i++ {
+			val := <-resultTree
+			path := append(val.prev, val.judul)
+			if !isInSlice(allPath, path) {
+				allPath = append(allPath, path)
+			}
+		}
+
+		return cntAsync, getPJ(), allPath
+	}
+}
+
+func isEqualSlice(s1, s2 []string) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+
+	for i, val := range s1 {
+		if val != s2[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func isInSlice(s1 [][]string, s2 []string) bool {
+	if len(s1) == 0 {
+		return false
+	}
+
+	for _, val := range s1 {
+		if isEqualSlice(val, s2) {
+			return true
+		}
+	}
+	return false
 }
