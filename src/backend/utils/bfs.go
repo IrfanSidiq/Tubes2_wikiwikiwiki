@@ -3,7 +3,6 @@ package scraper
 import (
 	"fmt"
 	"sync"
-	"golang.org/x/exp/slices"
 )
 
 func initTree(currentTree *Tree, c chan Tree, singleSolution bool) bool {
