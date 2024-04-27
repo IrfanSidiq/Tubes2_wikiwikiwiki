@@ -21,6 +21,10 @@ var (
 
 
 func IDS(fromTitle string, judulArtikelTujuan string, singleSolution bool) (int, int, [][]string) {
+	if (fromTitle == toTitle) {
+		return 0, 0, [][]string{{fromTitle}}
+	}
+	
 	fromLink 	= judulToLink(fromTitle)
 	toLink		= judulToLink(judulArtikelTujuan)
 	toTitle     = judulArtikelTujuan

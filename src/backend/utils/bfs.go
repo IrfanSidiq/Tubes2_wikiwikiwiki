@@ -70,8 +70,7 @@ func initTree(currentTree *Tree, c chan Tree, singleSolution bool) bool {
 func BFS(from string, to string, singleSolution bool) (int, int, [][]string) {
 	// Return jika judul asal dan tujuan sama
 	if (from == to) {
-		fmt.Println("Judul awal dan judul tujuan harus berbeda!")
-		return 0, 0, [][]string{}
+		return 0, 0, [][]string{{from}}
 	}
 
 	// Inisialisasi
