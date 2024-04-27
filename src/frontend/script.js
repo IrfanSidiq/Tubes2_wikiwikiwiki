@@ -55,6 +55,7 @@ document.querySelector("form").addEventListener("submit", function(event) {
     })
     .then(data => {
         // Handle response from server
+        console.log(data);
         displayResults(data);
     })
     .catch(error => {
@@ -92,13 +93,13 @@ const displayResults = (data) => {
     const searchDuration = document.createElement("p");
     searchDuration.textContent = `Search Duration: ${data.searchDuration} ms`;
     divSummary.appendChild(searchDuration);
-
     result.appendChild(divSummary);
 
     const divRoutes = document.createElement("div");
     divRoutes.classList.add("routes");
 
-    data.routes.forEach((rute, index) => {
+
+    data.routes.forEach((routes, index) => {
         const divRoute = document.createElement("div");
         divRoute.classList.add("route");
         
@@ -107,17 +108,19 @@ const displayResults = (data) => {
         divRoute.appendChild(h3);
         
         const ol = document.createElement("ol");
-        rute.forEach(link => {
+        for (const [link, title] of Object.entries(routes)) {
             const li = document.createElement("li");
             const a = document.createElement("a");
+            a.setAttribute("target", "_blank");
             a.href = link;
-            a.textContent = link;
+            a.textContent = title;
             li.appendChild(a);
             ol.appendChild(li);
-        });
+        };
+        
         divRoute.appendChild(ol);
         divRoutes.appendChild(divRoute)
-    })
+    });
 
     result.appendChild(divRoutes);
 }

@@ -137,8 +137,8 @@ button:hover {
 
 .routes {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(max-content, 400px));
-	justify-content: center;
+	grid-template-columns: repeat(auto-fill, 400px);
+	justify-content: space-evenly;
 	gap: 5vmin;
 }
 
@@ -154,7 +154,7 @@ button:hover {
 }
 
 .route ol {
-	margin-left: 2vh;
+	margin: 0 2vh;
 	padding-left: 3ch;
 }
 
@@ -171,5 +171,4 @@ button:hover {
 
 .route a:hover {
 	color: white;
-	font-weight: bold;
 }
