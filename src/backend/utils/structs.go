@@ -3,8 +3,7 @@ package scraper
 import "sync"
 
 /*
-	STRUCT, GLOBAL-VARIABLE, DAN METHOD
-	YANG DIGUNAKAN UNTUK BFS_ASYNC.GO
+	STRUCT, GLOBAL-VARIABLE, DAN METHOD YANG DIGUNAKAN
 */
 
 // Struct
@@ -16,17 +15,27 @@ type Tree struct {
 	depth   int
 }
 
+type stringBoolMap struct {
+	Map map[string]bool
+	sync.RWMutex
+}
+
+type IDSTree struct {
+	Map map[string][]string
+	sync.RWMutex
+}
+
 // Global Variables
 var (
-	linkAsal string
-	linkTujuan string
-	visitedAsync stringBoolMap
+	linkAsal 		string
+	linkTujuan 		string
+	visitedAsync 	stringBoolMap
 	
-	cntAsync int
-	cntMutex sync.Mutex
+	cntAsync 		int
+	cntMutex 		sync.Mutex
 
-	foundAsync bool
-	foundMutex sync.Mutex
+	foundAsync 		bool
+	foundMutex 		sync.Mutex
 )
 
 // Method
@@ -54,10 +63,42 @@ func incCnt() {
 	cntAsync++
 }
 
+func newStringBoolMap() stringBoolMap {
+	return stringBoolMap{map[string]bool{}, sync.RWMutex{}}
+}
+
+func (m *stringBoolMap) get(key string) bool {
+	m.RLock()
+	defer m.RUnlock()
+	return m.Map[key]
+}
+
+func (m *stringBoolMap) set(key string) {
+	m.Lock()
+	defer m.Unlock()
+	m.Map[key] = true
+}
+
 func (m *stringBoolMap) keyExists(key string) bool {
 	m.RLock()
 	defer m.RUnlock()
 
 	_, ok := m.Map[key]
 	return ok 
+}
+
+func newIDSTree() IDSTree {
+	return IDSTree{map[string][]string{}, sync.RWMutex{}}
+}
+
+func (m *IDSTree) get(key string) []string {
+	m.RLock()
+	defer m.RUnlock()
+	return m.Map[key]
+}
+
+func (m *IDSTree) set(key string, value []string) {
+	m.Lock()
+	defer m.Unlock()
+	m.Map[key] = value
 }

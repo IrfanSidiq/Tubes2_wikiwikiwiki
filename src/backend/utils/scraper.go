@@ -72,8 +72,8 @@ func linkTojudul(link string) string {
 // 	/* Terima Input */
 
 // 	// var jenisAlgoritma int
-// 	var judulArtikelAwal string = "Paging"
-// 	var judulArtikelTujuan string = "Stardew Valley"
+// 	var judulArtikelAwal string = "Joko Widodo"
+// 	var judulArtikelTujuan string = "Atheism"
 
 // 	/* Algoritma */
 // 	startTime := time.Now()

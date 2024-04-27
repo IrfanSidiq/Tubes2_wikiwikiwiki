@@ -3,53 +3,88 @@ package scraper
 import (
 	"fmt"
 	"sync"
-
 	"golang.org/x/exp/slices"
 )
 
-func IDS_async(fromTitle string, toTitle string) {
-	if (fromTitle == toTitle) {
-		fmt.Println("Judul artikel asal dan tujuan harus beda!")
-		return
-	}
 
-	fromLink := judulToLink(fromTitle)
-	resultPath := make(chan []string)
-	found := false
+var (
+	fromLink          string
+	toLink            string
+	toTitle			  string
+	resultPaths       chan []string
+	done			  chan bool
+	found             bool
+	visitedLinks      stringBoolMap
+	cache             IDSTree
+)
 
-	var wg sync.WaitGroup
-	var visitedLinks stringBoolMap
-	var cache IDSTree = newIDSTree()
+
+func IDS(fromTitle string, judulArtikelTujuan string, singleSolution bool) (int, int, [][]string) {
+	fromLink 	= judulToLink(fromTitle)
+	toLink		= judulToLink(judulArtikelTujuan)
+	toTitle     = judulArtikelTujuan
+	resultPaths = make(chan []string, 1000)
+	done		= make(chan bool)
+	cache		= newIDSTree()
+	found 		= false
+
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("panic occurred:", err)
+		}
+	}()
 
 	go func() {
 		maxDepth := 0
 		for !found {
-			maxDepth++
-			wg.Add(1)
-			visitedLinks = newStringBoolMap()
-			fmt.Println("\nDepth:", maxDepth - 1)
+			fmt.Println("\nDepth:", maxDepth)
 			fmt.Println()
-			DLS(fromLink, toTitle, 0, maxDepth - 1, []string{}, resultPath, &found, &wg, &visitedLinks, &cache)
+
+			visitedLinks = newStringBoolMap()
+			var wg sync.WaitGroup
+			wg.Add(1)
+			
+			DLS(fromLink, maxDepth, []string{}, &wg)
+			
 			if (!found) {
 				fmt.Println("\nSearch with maxDepth", maxDepth, "didn't find a result. Trying again with maxDepth", maxDepth+1, "...")
+				maxDepth++
+			} else if (!singleSolution) {
+				done <- true
 			}
 		}
 	} ()
 
-	result := <- resultPath
-	fmt.Print("\nFound path              : \"" + result[0] + "\"")
-	for i := 1; i < len(result); i++ {
-		fmt.Print(" -> \"" + result[i] + "\"")
+	// If searching for multiple paths, wait until all goroutines finishes
+	if (!singleSolution) {
+		<- done
 	}
-	fmt.Println()
-	fmt.Println("Number of links visited :", len(visitedLinks.Map))
-	fmt.Println("Route length            :", len(result))
+
+	
+	var result [][]string
+	result = append(result, <- resultPaths)
+	close(resultPaths)
+	close(done)
+
+	for i := 0; i < len(resultPaths); i++ {
+		var path = <- resultPaths
+		result = append(result, path)
+	}
+
+	return len(visitedLinks.Map), len(result[0]) - 1, result
 }
 
-func DLS(fromLink string, toTitle string, depth int, maxDepth int, path []string, resultChan chan []string, found *bool, wg *sync.WaitGroup, visitedLinks *stringBoolMap, cache *IDSTree) {
+
+func DLS(currentLink string, depth int, path []string, wg *sync.WaitGroup) {
+	defer func() {
+		if err := recover(); err != nil {
+			// do nothing
+		}
+	}()
 	defer wg.Done()
 
-	currentJudul := linkTojudul(fromLink)
+	currentJudul := linkTojudul(currentLink)
+	
 	if (visitedLinks.get(currentJudul)) {
 		return
 	}
@@ -57,40 +92,43 @@ func DLS(fromLink string, toTitle string, depth int, maxDepth int, path []string
 
 	var nextLinks []string = cache.get(currentJudul)
 	if (len(nextLinks) == 0) {
-		linkScraping(fromLink, &nextLinks, &currentJudul)
+		linkScraping(currentLink, &nextLinks, &currentJudul)
 		cache.set(currentJudul, nextLinks)
 	}
 	
 	path = append(path, currentJudul)
 
-	fmt.Print("SEARCHING: \"" + path[0] + "\"")
-	for i := 1; i < len(path); i++ {
-		fmt.Print(" -> \"" + path[i] + "\"")
-	}
-	fmt.Println()
+	// fmt.Print("SEARCHING: \"" + path[0] + "\"")
+	// for i := 1; i < len(path); i++ {
+	// 	fmt.Print(" -> \"" + path[i] + "\"")
+	// }
+	// fmt.Println()
 
-	if (slices.Contains(nextLinks, judulToLink(toTitle))) {
+	if (slices.Contains(nextLinks, toLink)) {
 		path = append(path, toTitle)
-		*found = true
-		resultChan <- path
+		found = true
+		resultPaths <- path
+
 		return
 	}
 	
 	if (currentJudul == toTitle) {
-		*found = true
-		resultChan <- path
+		found = true
+		resultPaths <- path
+
 		return
 	}
 
-	if (depth + 1 > maxDepth) {
+	if (depth == 0) {
 		return
 	}
 
+	xthreads := 4
 	var linkChannel = make(chan string, len(nextLinks))
 	var currentWg sync.WaitGroup
-	xthreads := 4
-
 	currentWg.Add(len(nextLinks) + xthreads)
+	
+
 	for i := 0; i < xthreads; i++ {
 		go func() {
 			for {
@@ -99,7 +137,7 @@ func DLS(fromLink string, toTitle string, depth int, maxDepth int, path []string
 					currentWg.Done()
 					return
 				}
-				DLS(nextLink, toTitle, depth + 1, maxDepth, path, resultChan, found, &currentWg, visitedLinks, cache)
+				DLS(nextLink, depth - 1, path, &currentWg)
 			}
 		} ()
 	}
@@ -110,49 +148,4 @@ func DLS(fromLink string, toTitle string, depth int, maxDepth int, path []string
 
 	close(linkChannel)
 	currentWg.Wait()
-}
-
-
-/* ----- Helper Data Types ----- */
-
-type stringBoolMap struct {
-	Map map[string]bool
-	sync.RWMutex
-}
-
-func newStringBoolMap() stringBoolMap {
-	return stringBoolMap{map[string]bool{}, sync.RWMutex{}}
-}
-
-func (m *stringBoolMap) get(key string) bool {
-	m.RLock()
-	defer m.RUnlock()
-	return m.Map[key]
-}
-
-func (m *stringBoolMap) set(key string) {
-	m.Lock()
-	defer m.Unlock()
-	m.Map[key] = true
-}
-
-type IDSTree struct {
-	Map map[string][]string
-	sync.RWMutex
-}
-
-func newIDSTree() IDSTree {
-	return IDSTree{map[string][]string{}, sync.RWMutex{}}
-}
-
-func (m *IDSTree) get(key string) []string {
-	m.RLock()
-	defer m.RUnlock()
-	return m.Map[key]
-}
-
-func (m *IDSTree) set(key string, value []string) {
-	m.Lock()
-	defer m.Unlock()
-	m.Map[key] = value
 }
