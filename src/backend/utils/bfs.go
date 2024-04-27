@@ -133,8 +133,7 @@ func BFS(from string, to string, singleSolution bool) (int, int, [][]string) {
 						} 
 
 						if getPJ() != -99 {
-							if currentTree.depth > getPJ() {
-								fmt.Println("done")
+							if currentTree.depth >= getPJ() {
 								setDone(true)
 								return
 							}
