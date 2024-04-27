@@ -61,7 +61,7 @@ func judulToLink(judul string) string {
 /*
 	Ubah link menjadi judul artikel
 */
-func linkTojudul(link string) string {
+func LinkTojudul(link string) string {
 	encoded := strings.TrimPrefix(link, "https://en.wikipedia.org/wiki/")
 	encoded = strings.ReplaceAll(encoded, "_", "+")
 	decoded, err := url.QueryUnescape(encoded)

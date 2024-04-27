@@ -39,8 +39,8 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 
 	var (
 		jumlahArtikelDiperiksa int
-		jumlahArtikelDilalui int
-		routes [][]string
+		jumlahArtikelDilalui   int
+		routes                 [][]string
 	)
 
 	startTime := time.Now()
@@ -74,12 +74,26 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Routes:")                                           // testing
 	fmt.Println(routes)                                              // testing
 	fmt.Println("Search duration:", searchDuration, "ms")            // testing
+	
+	// Convert routes to include titles
+	routesWithTitle := make([]map[string]string, len(routes))
+	for i, route := range routes {
+		routesWithTitle[i] = make(map[string]string, len(route))
+		for _, link := range route {
+			routesWithTitle[i][link] = scraper.LinkTojudul(link)
+		}
+	}
+	
+	fmt.Println("routesWithTitle:")
+	for _, route := range routesWithTitle {
+		fmt.Println(route)
+	}
 
 	// Send response
 	response := map[string]any{
 		"jumlahArtikelDiperiksa": jumlahArtikelDiperiksa,
 		"jumlahArtikelDilalui":   jumlahArtikelDilalui,
-		"routes":                 routes,
+		"routes":                 routesWithTitle,
 		"searchDuration":         searchDuration,
 	}
 

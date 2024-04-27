@@ -30,7 +30,7 @@ func initTree(currentTree *Tree, c chan Tree, singleSolution bool) bool {
 		
 		// Jika link sama dengan link yang di cari, return
 		if link == linkTujuan {
-			newTree.judul = linkTojudul(linkTujuan)
+			newTree.judul = LinkTojudul(linkTujuan)
 			if singleSolution {
 				if !getFound() {
 					setFound(true)

@@ -3,6 +3,7 @@ package scraper
 import (
 	"fmt"
 	"sync"
+
 	"golang.org/x/exp/slices"
 )
 
@@ -82,7 +83,7 @@ func DLS(currentLink string, depth int, path []string, wg *sync.WaitGroup) {
 	}()
 	defer wg.Done()
 
-	currentJudul := linkTojudul(currentLink)
+	currentJudul := LinkTojudul(currentLink)
 	
 	if (visitedLinks.get(currentJudul)) {
 		return
