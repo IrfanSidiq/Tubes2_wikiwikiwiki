@@ -60,7 +60,6 @@ func IDS(fromTitle string, judulArtikelTujuan string, singleSolution bool) (int,
 		<- done
 	}
 
-	
 	var result [][]string
 	result = append(result, <- resultPaths)
 	close(resultPaths)
@@ -96,16 +95,16 @@ func DLS(currentLink string, depth int, path []string, wg *sync.WaitGroup) {
 		cache.set(currentJudul, nextLinks)
 	}
 	
-	path = append(path, currentJudul)
+	path = append(path, currentLink)
 
-	// fmt.Print("SEARCHING: \"" + path[0] + "\"")
-	// for i := 1; i < len(path); i++ {
-	// 	fmt.Print(" -> \"" + path[i] + "\"")
-	// }
-	// fmt.Println()
+	fmt.Print("SEARCHING: \"" + path[0] + "\"")
+	for i := 1; i < len(path); i++ {
+		fmt.Print(" -> \"" + path[i] + "\"")
+	}
+	fmt.Println()
 
 	if (slices.Contains(nextLinks, toLink)) {
-		path = append(path, toTitle)
+		path = append(path, toLink)
 		found = true
 		resultPaths <- path
 
@@ -123,7 +122,7 @@ func DLS(currentLink string, depth int, path []string, wg *sync.WaitGroup) {
 		return
 	}
 
-	xthreads := 4
+	xthreads := 3
 	var linkChannel = make(chan string, len(nextLinks))
 	var currentWg sync.WaitGroup
 	currentWg.Add(len(nextLinks) + xthreads)
