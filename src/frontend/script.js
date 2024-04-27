@@ -13,6 +13,7 @@ document.querySelector("form").addEventListener("submit", function(event) {
     const endPageValue = document.getElementById("end-page").value;
     if (startPageValue === endPageValue) {
         const div = document.createElement("div");
+        div.classList.add("summary");
         const p = document.createElement("p");
         p.textContent = "Start page and end page must be different!";
         div.appendChild(p);
@@ -22,6 +23,7 @@ document.querySelector("form").addEventListener("submit", function(event) {
 
     // Display searching message
     const div = document.createElement("div");
+    div.classList.add("summary");
     const p = document.createElement("p");
     p.textContent = "Searching...";
     div.appendChild(p);

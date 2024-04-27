@@ -61,6 +61,7 @@ header {
 h1 {
 	font-size: 3em;
 	font-weight: bold;
+	color: white;
 	margin-top: 5vh;
 }
 
@@ -94,16 +95,16 @@ input, select {
 
 input {
 	font-size: 1.25em;
-	width: 400px;
+	width: 50vmin;
 }
 
 select {
 	font-size: 1em;
-	width: 300px;
+	width: 40vmin;
 }
 
 button {
-	width: 150px;
+	width: 20vmin;
 	padding: 0.5em;
 	font-size: 1em;
 	font-weight: bold;
@@ -118,21 +119,57 @@ button:hover {
 	color: black;
 }
 
-.result div {
+.result {
 	margin: 5vh;
-	text-align: center; /* temporary */
 }
 
-/*
-.result div.summary {
+.summary, .routes {
+	margin: 5vh 0;
+}
+
+.summary {
 	text-align: center;
 }
 
-.result div.routes {
-	overflow: auto;
+.summary p {
+	margin: 2vh;
 }
 
-.result div.route {
-	float: left;
+.routes {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(max-content, 400px));
+	justify-content: center;
+	gap: 5vmin;
 }
-*/
+
+.route {
+	box-sizing: border-box;
+	border: 5px solid white;
+	border-radius: 20px;
+}
+
+.route h3 {
+	margin: 2vh;
+	color: white;
+}
+
+.route ol {
+	margin-left: 2vh;
+	padding-left: 3ch;
+}
+
+.route li {
+	margin: 2vh 0;
+	padding-left: 1ch;
+	list-style-type: decimal;
+}
+
+.route a {
+	text-decoration: none;
+	color: rgb(220, 220, 220);
+}
+
+.route a:hover {
+	color: white;
+	font-weight: bold;
+}
