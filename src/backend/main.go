@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"time"
+	"wikipediaScraper/backend/utils"
 )
 
 func processHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,10 +60,10 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 		if numberOfPath == "single" {
 			fmt.Println(startPage, endPage, "IDS", "Single") // testing
 			// single ids
-			// jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes := IDS_Async(startPage, endPage)
+			jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes = scraper.IDS(startPage, endPage, true)
 		} else {
 			fmt.Println(startPage, endPage, "IDS", "Multiple") // testing
-			// multiple ids
+			jumlahArtikelDiperiksa, jumlahArtikelDilalui, routes = scraper.IDS(startPage, endPage, false)
 		}
 	}
 

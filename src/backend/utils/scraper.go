@@ -3,7 +3,7 @@ package scraper
 import (
 	"net/url"
 	"strings"
-
+	"fmt"
 	"github.com/gocolly/colly"
 )
 
@@ -14,6 +14,10 @@ func linkScraping(link string, links *[]string, judul *string) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("en.wikipedia.org", "id.wikipedia.org"),
 	)
+
+	c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	})
 
 	c.OnHTML("div[id=mw-content-text] p a[href]", func(h *colly.HTMLElement) {
 		var link string = h.Attr("href")
