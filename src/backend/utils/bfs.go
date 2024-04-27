@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func initTreeAsync(currentTree *Tree, c chan Tree) bool {
+func initTree(currentTree *Tree, c chan Tree) bool {
 	if getFound() {
 		return false
 	} 
@@ -33,9 +33,13 @@ func initTreeAsync(currentTree *Tree, c chan Tree) bool {
 			setFound(true)
 
 			newTree.judul = linkTojudul(linkTujuan)
-			if (len(c) < 1) {
-				c <- newTree
+			select {
+			case c <- newTree:
+			default:
 			}
+			// if (len(c) < 1) {
+			// 	c <- newTree
+			// }
 
 			return false
 		}
@@ -71,7 +75,7 @@ func BFS(from string, to string) (int, int, [][]string) {
 	queueA := make(chan *Tree, 10000000)
 	resultTree := make(chan Tree, 1)
 	
-	initTreeAsync(&a, resultTree)
+	initTree(&a, resultTree)
 	for _, val := range a.nextArr {
 		queueA <- val
 	}
@@ -93,7 +97,7 @@ func BFS(from string, to string) (int, int, [][]string) {
 					}
 	
 					// Return jika sudah di visit / sudah ketemu
-					isNotVisited := initTreeAsync(currentTree, resultTree)
+					isNotVisited := initTree(currentTree, resultTree)
 					if !isNotVisited {
 						return
 					} else if getFound() {
@@ -114,9 +118,13 @@ func BFS(from string, to string) (int, int, [][]string) {
 					// Set found ke true kalo judul sama dg to
 					if (currentTree.judul == to) && !getFound() {
 						setFound(true)
-						if (len(resultTree) < 1) {
-							resultTree <- *currentTree
+						select {
+						case resultTree <- *currentTree:
+						default:
 						}
+						// if (len(resultTree) < 1) {
+						// 	resultTree <- *currentTree
+						// }
 						return
 					}
 					
@@ -126,7 +134,6 @@ func BFS(from string, to string) (int, int, [][]string) {
 							select {
 							case queueA <- val:
 							default: 
-								setFound(true)
 								fmt.Println("Channel penuh")
 							}
 						}
