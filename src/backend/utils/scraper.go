@@ -28,7 +28,8 @@ func linkScraping(link string, links *[]string, judul *string) {
 			!strings.HasPrefix(link, "/wiki/Template:") &&
 			!strings.HasPrefix(link, "/wiki/Wikipedia:")) &&
 			!strings.HasPrefix(link, "/wiki/Help:") &&
-			!strings.HasPrefix(link, "/wiki/Portal:") {
+			!strings.HasPrefix(link, "/wiki/Portal:") &&
+			!strings.HasPrefix(link, "/wiki/Main_Page") {
 			link = "https://en.wikipedia.org" + link 
 			*links = append(*links, link)
 		}
@@ -72,22 +73,3 @@ func linkTojudul(link string) string {
 		return "GAGAL DECODE"
 	}
 }
-
-// func main() {
-// 	/* Terima Input */
-
-// 	// var jenisAlgoritma int
-// 	var judulArtikelAwal string = "Joko Widodo"
-// 	var judulArtikelTujuan string = "Atheism"
-
-// 	/* Algoritma */
-// 	startTime := time.Now()
-
-// 	BFS_Async(judulArtikelAwal, judulArtikelTujuan)
-// 	// IDS_async(judulArtikelAwal, judulArtikelTujuan)
-
-// 	duration := time.Since(startTime)
-
-// 	fmt.Print("Runtime: ")
-// 	fmt.Println(duration)
-// }
